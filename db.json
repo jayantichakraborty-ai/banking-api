@@ -1,0 +1,63 @@
+{
+  "accounts":[{
+    "balance": "4400",
+    "account_name": "June Smith",
+    "account_type": "savings",
+    "account_id": "1001"
+  },
+  {
+    "balance": "90000",
+    "account_name": "Michael Johnson",
+    "account_type": "savings",
+    "account_id": "1002"
+  },
+  {
+    "balance": "90000",
+    "account_name": "Emily Davis",
+    "account_type": "savings",
+    "account_id": "1003"
+  },
+  {
+    "balance": "90000",
+    "account_name": "David Wilson",
+    "account_type": "savings",
+    "account_id": "1004"
+  },
+  {
+    "balance": "17000",
+    "account_name": "Sarah Brown",
+    "account_type": "savings",
+    "account_id": "1006"
+  },
+  {
+    "balance": "45000",
+    "account_name": "James Lee",
+    "account_type": "savings",
+    "account_id": "1007"
+  },
+  {
+    "balance": "17000",
+    "account_name": "Laura Harris",
+    "account_type": "savings",
+    "account_id": "1008"
+  },
+  {
+    "balance": "86000",
+    "account_name": "Robert Clark",
+    "account_type": "savings",
+    "account_id": "1009"
+  },
+  {
+    "balance": "21000",
+    "account_name": "Olivia Martinez",
+    "account_type": "savings",
+    "account_id": "1010"
+  },
+  {
+    "balance": "62000",
+    "account_name": "Jerome",
+    "account_type": "Savings",
+    "account_id": "1011"
+  }
+ ]
+}
