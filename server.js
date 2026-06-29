@@ -196,6 +196,122 @@ app.delete("/loans/:loanID", (req, res) => {
   writeDb(db);
   res.json({ message: "Loan deleted", loan: deleted[0] });
 });
+// ============================================
+//  CUSTOMERS ROUTES
+// ============================================
+
+app.get("/customers", (req, res) => {
+  const db = readDb();
+  let results = db.customers || [];
+
+  if (req.query.customer_id) {
+    results = results.filter((c) => c.customer_id === req.query.customer_id);
+  }
+
+  if (req.query.name) {
+    results = results.filter((c) =>
+      c.name.toLowerCase().includes(req.query.name.toLowerCase())
+    );
+  }
+
+  if (req.query.mobile_number) {
+    results = results.filter((c) => c.mobile_number === req.query.mobile_number);
+  }
+
+  if (req.query.account_type) {
+    results = results.filter(
+      (c) => c.account_type.toLowerCase() === req.query.account_type.toLowerCase()
+    );
+  }
+
+  if (req.query.plan_name) {
+    results = results.filter((c) =>
+      c.plan_name.toLowerCase().includes(req.query.plan_name.toLowerCase())
+    );
+  }
+
+  if (req.query.bill_status) {
+    results = results.filter(
+      (c) => c.bill_status && c.bill_status.toLowerCase() === req.query.bill_status.toLowerCase()
+    );
+  }
+
+  res.json(results);
+});
+
+app.get("/customers/:customer_id", (req, res) => {
+  const db = readDb();
+  const customer = (db.customers || []).find(
+    (c) => c.customer_id === req.params.customer_id
+  );
+
+  if (customer) {
+    res.json(customer);
+  } else {
+    res.status(404).json({ error: "Customer not found" });
+  }
+});
+
+app.post("/customers", (req, res) => {
+  const db = readDb();
+  db.customers = db.customers || [];
+
+  const newCustomer = {
+    customer_id: req.body.customer_id || `CUST${1001 + db.customers.length}`,
+    name: req.body.name || "New Customer",
+    mobile_number: req.body.mobile_number || "",
+    account_type: req.body.account_type || "Prepaid",
+    plan_name: req.body.plan_name || "",
+    billing_issues: req.body.billing_issues || [],
+    refunds: req.body.refunds || [],
+    ...req.body,
+  };
+
+  db.customers.push(newCustomer);
+  writeDb(db);
+
+  res.status(201).json(newCustomer);
+});
+
+app.put("/customers/:customer_id", (req, res) => {
+  const db = readDb();
+  db.customers = db.customers || [];
+
+  const index = db.customers.findIndex(
+    (c) => c.customer_id === req.params.customer_id
+  );
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Customer not found" });
+  }
+
+  db.customers[index] = {
+    ...db.customers[index],
+    ...req.body,
+    customer_id: db.customers[index].customer_id,
+  };
+
+  writeDb(db);
+  res.json(db.customers[index]);
+});
+
+app.delete("/customers/:customer_id", (req, res) => {
+  const db = readDb();
+  db.customers = db.customers || [];
+
+  const index = db.customers.findIndex(
+    (c) => c.customer_id === req.params.customer_id
+  );
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Customer not found" });
+  }
+
+  const deleted = db.customers.splice(index, 1);
+  writeDb(db);
+
+  res.json({ message: "Customer deleted", customer: deleted[0] });
+});
 
 // ============================================
 //  ROOT
@@ -222,7 +338,19 @@ app.get("/", (req, res) => {
         create: "POST /loans",
         update: "PUT /loans/L1005",
         delete: "DELETE /loans/L1005"
-      }
+      },
+      customers: {
+        list_all: "GET /customers",
+        get_by_id: "GET /customers/CUST1001",
+        search_by_name: "GET /customers?name=Rahul",
+        search_by_mobile: "GET /customers?mobile_number=9876543210",
+        search_by_account_type: "GET /customers?account_type=Prepaid",
+        search_by_plan: "GET /customers?plan_name=Unlimited",
+        search_by_bill_status: "GET /customers?bill_status=Unpaid",
+        create: "POST /customers",
+        update: "PUT /customers/CUST1001",
+        delete: "DELETE /customers/CUST1001"
+}
     }
   });
 });
@@ -252,5 +380,17 @@ app.listen(PORT, () => {
   console.log(`  POST   /loans                          - Create loan`);
   console.log(`  PUT    /loans/:loanID                   - Update loan`);
   console.log(`  DELETE /loans/:loanID                   - Delete loan`);
+
+  console.log(`\nCUSTOMERS ROUTES`);
+  console.log(`  GET    /customers                         - List all customers`);
+  console.log(`  GET    /customers/:customer_id             - Get customer by ID`);
+  console.log(`  GET    /customers?name=Rahul               - Filter by name`);
+  console.log(`  GET    /customers?mobile_number=9876543210 - Filter by mobile`);
+  console.log(`  GET    /customers?account_type=Prepaid     - Filter by account type`);
+  console.log(`  GET    /customers?plan_name=Unlimited      - Filter by plan`);
+  console.log(`  GET    /customers?bill_status=Unpaid       - Filter by bill status`);
+  console.log(`  POST   /customers                         - Create customer`);
+  console.log(`  PUT    /customers/:customer_id             - Update customer`);
+  console.log(`  DELETE /customers/:customer_id             - Delete customer`);
 });
 
