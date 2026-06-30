@@ -295,6 +295,47 @@ app.put("/customers/:customer_id", (req, res) => {
   res.json(db.customers[index]);
 });
 
+app.patch("/customers/:customer_id", (req, res) => {
+  const db = readDb();
+  db.customers = db.customers || [];
+
+  const index = db.customers.findIndex(
+    (c) => c.customer_id === req.params.customer_id
+  );
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Customer not found" });
+  }
+
+  db.customers[index] = {
+    ...db.customers[index],
+    ...req.body,
+    customer_id: db.customers[index].customer_id,
+  };
+
+  writeDb(db);
+
+  res.json(db.customers[index]);
+});
+app.patch("/customers/:customer_id/billing_issues", (req, res) => {
+  const db = readDb();
+
+  const customer = db.customers.find(
+    c => c.customer_id === req.params.customer_id
+  );
+
+  if (!customer) {
+    return res.status(404).json({ error: "Customer not found" });
+  }
+
+  customer.billing_issues = customer.billing_issues || [];
+  customer.billing_issues.push(req.body);
+
+  writeDb(db);
+
+  res.json(customer);
+});
+
 app.delete("/customers/:customer_id", (req, res) => {
   const db = readDb();
   db.customers = db.customers || [];
@@ -349,6 +390,8 @@ app.get("/", (req, res) => {
         search_by_bill_status: "GET /customers?bill_status=Unpaid",
         create: "POST /customers",
         update: "PUT /customers/CUST1001",
+        partial_update: "PATCH /customers/CUST1001",
+        add_billing_issue: "PATCH /customers/CUST1001/billing_issues",
         delete: "DELETE /customers/CUST1001"
 }
     }
@@ -381,16 +424,23 @@ app.listen(PORT, () => {
   console.log(`  PUT    /loans/:loanID                   - Update loan`);
   console.log(`  DELETE /loans/:loanID                   - Delete loan`);
 
-  console.log(`\nCUSTOMERS ROUTES`);
-  console.log(`  GET    /customers                         - List all customers`);
-  console.log(`  GET    /customers/:customer_id             - Get customer by ID`);
-  console.log(`  GET    /customers?name=Rahul               - Filter by name`);
-  console.log(`  GET    /customers?mobile_number=9876543210 - Filter by mobile`);
-  console.log(`  GET    /customers?account_type=Prepaid     - Filter by account type`);
-  console.log(`  GET    /customers?plan_name=Unlimited      - Filter by plan`);
-  console.log(`  GET    /customers?bill_status=Unpaid       - Filter by bill status`);
-  console.log(`  POST   /customers                         - Create customer`);
-  console.log(`  PUT    /customers/:customer_id             - Update customer`);
-  console.log(`  DELETE /customers/:customer_id             - Delete customer`);
+console.log(`\nCUSTOMERS ROUTES`);
+console.log(`  GET    /customers                         - List all customers`);
+console.log(`  GET    /customers/:customer_id            - Get customer by ID`);
+console.log(`  GET    /customers?name=Rahul              - Filter by name`);
+console.log(`  GET    /customers?mobile_number=9876543210 - Filter by mobile`);
+console.log(`  GET    /customers?account_type=Prepaid    - Filter by account type`);
+console.log(`  GET    /customers?plan_name=Unlimited     - Filter by plan`);
+console.log(`  GET    /customers?bill_status=Unpaid      - Filter by bill status`);
+console.log(`  POST   /customers                         - Create customer`);
+console.log(`  PUT    /customers/:customer_id            - Update customer`);
+console.log(`  PATCH  /customers/:customer_id            - Partially update customer`);
+console.log(`  DELETE /customers/:customer_id            - Delete customer`);
+
+console.log(`\nPAYMENT ISSUES ROUTES`);
+console.log(`  GET    /customers/:customer_id/payment_issues              - List payment issues`);
+console.log(`  POST   /customers/:customer_id/payment_issues              - Add payment issue`);
+console.log(`  PATCH  /customers/:customer_id/payment_issues/:issue_id    - Update payment issue`);
+console.log(`  DELETE /customers/:customer_id/payment_issues/:issue_id    - Delete payment issue`);
 });
 
