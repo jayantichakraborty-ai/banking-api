@@ -434,6 +434,15 @@ app.get("/", (req, res) => {
         partial_update: "PATCH /customers/CUST1001",
         add_billing_issue: "PATCH /customers/CUST1001/billing_issues",
         delete: "DELETE /customers/CUST1001"
+},
+      plans: {
+  list_all: "GET /plans",
+  get_by_name: "GET /plans/Unlimited%20399",
+  search_by_name: "GET /plans?plan_name=Unlimited",
+  search_by_type: "GET /plans?type=Prepaid",
+  create: "POST /plans",
+  update: "PUT /plans/Unlimited%20399",
+  delete: "DELETE /plans/Unlimited%20399"
 }
     }
   });
@@ -483,5 +492,14 @@ console.log(`  GET    /customers/:customer_id/payment_issues              - List
 console.log(`  POST   /customers/:customer_id/payment_issues              - Add payment issue`);
 console.log(`  PATCH  /customers/:customer_id/payment_issues/:issue_id    - Update payment issue`);
 console.log(`  DELETE /customers/:customer_id/payment_issues/:issue_id    - Delete payment issue`);
+
+console.log(`\nPLANS ROUTES`);
+console.log(`  GET    /plans                         - List all plans`);
+console.log(`  GET    /plans/:plan_name              - Get plan by name`);
+console.log(`  GET    /plans?plan_name=Unlimited     - Filter by plan name`);
+console.log(`  GET    /plans?type=Prepaid            - Filter by plan type`);
+console.log(`  POST   /plans                         - Create plan`);
+console.log(`  PUT    /plans/:plan_name              - Update plan`);
+console.log(`  DELETE /plans/:plan_name              - Delete plan`);
 });
 
