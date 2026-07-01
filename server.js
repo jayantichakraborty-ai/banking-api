@@ -355,6 +355,47 @@ app.delete("/customers/:customer_id", (req, res) => {
 });
 
 // ============================================
+//  PLANS ROUTES
+// ============================================
+
+// Get all plans (supports filtering)
+app.get("/plans", (req, res) => {
+  const db = readDb();
+  let results = db.plans;
+
+  if (req.query.plan_name) {
+    results = results.filter((p) =>
+      p.plan_name.toLowerCase().includes(req.query.plan_name.toLowerCase())
+    );
+  }
+
+  if (req.query.type) {
+    results = results.filter(
+      (p) => p.Type.toLowerCase() === req.query.type.toLowerCase()
+    );
+  }
+
+  res.json(results);
+});
+
+// Get a plan by name
+app.get("/plans/:plan_name", (req, res) => {
+  const db = readDb();
+
+  const plan = db.plans.find(
+    (p) =>
+      p.plan_name.toLowerCase() ===
+      decodeURIComponent(req.params.plan_name).toLowerCase()
+  );
+
+  if (plan) {
+    res.json(plan);
+  } else {
+    res.status(404).json({ error: "Plan not found" });
+  }
+});
+
+// ============================================
 //  ROOT
 // ============================================
 app.get("/", (req, res) => {
